@@ -1,32 +1,30 @@
 def primes(n):
-    return _primes(n, 2, [])
+    return primes_helper(n, 2, [])
 
 
-def _primes(n, i, p_list):
+def primes_helper(n, i, p_list):
     if n > i:
-        if isPrime(i, 2) is True:
+        if is_prime(i, 2) is True:
             p_list.append(i)
-        return _primes(n, i+1, p_list)
+        return primes_helper(n, i+1, p_list)
     else:
         return p_list
 
 
-def isPrime(n, j):
-    if n >= j:
-        if _isPrime(n, j) is True:
-            return True
-        else:
-            return False
+def is_prime(n, j):
+      if is_prime_helper(n, j) is True:
+         return True
+      else:
+         return False
 
 
-def _isPrime(n, j):
+def is_prime_helper(n, j):
     if n == j:
         return True
     elif n % j == 0:
         return False
-
     else:
-        return _isPrime(n, j+1)
+        return is_prime_helper(n, j+1)
 
 
 print(primes(100))

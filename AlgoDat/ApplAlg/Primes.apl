@@ -14,13 +14,11 @@ _primes(n, i, p_list) = if n<i then
 
 
 
-isPrime(n, j) = if n<=j then
+isPrime(n, j) = 
+   if _isPrime(n, j) = true then
+      true
+   else
       false
-      else
-         if _isPrime(n, j) = true then
-            true
-         else
-         endif
    endif
 
 
