@@ -9,25 +9,17 @@ _primes(n, i, p_list) = if n<i then
          if isPrime(i, 2) = true then
             _primes(n, i+1, i->p_list[length(p_list)])
          else
+         0
          endif
    endif
 
 
-
-isPrime(n, j) = 
-   if _isPrime(n, j) = true then
-      true
-   else
-      false
-   endif
-
-
-_isPrime(n,j) = if n=j then
+isPrime(n,j) = if n=j then
       true
    else if n%j = 0 then
       false
    else
-      _isPrime(n, j+1)
+      isPrime(n, j+1)
    endif
 endif
 

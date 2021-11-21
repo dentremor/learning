@@ -2,10 +2,8 @@ def get_decimal(number, decimal):
    return get_decimal_helper(number, decimal, [], 1, 0, 0)
 
 def get_decimal_helper(number, decimal, list, i_number, i_decimal, result):
-      cache = result + (i_number/power(10, i_decimal))
-      list.append(cache)
-      if (cache*cache) < number:
-         return get_decimal_helper(number, decimal, list, i_number+1, i_decimal, result)
+      if (result + (i_number/power(10, i_decimal)))^2 < number:
+         return get_decimal_helper(number, decimal, list.append, i_number+1, i_decimal, result)
       elif i_decimal == (decimal+1):
          return result
       else:

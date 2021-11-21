@@ -26,17 +26,6 @@ func primes_helper(n int, i int, list []int) (result []int) {
 }
 
 func is_prime(n int, j int) (result bool) {
-	if is_prime_helper(n, j) == true {
-		result = true
-		return
-	} else {
-		result = false
-		return
-	}
-
-}
-
-func is_prime_helper(n int, j int) (result bool) {
 	if n == j {
 		result = true
 		return
@@ -44,6 +33,6 @@ func is_prime_helper(n int, j int) (result bool) {
 		result = false
 		return
 	} else {
-		return is_prime_helper(n, j+1)
+		return is_prime(n, j+1)
 	}
 }

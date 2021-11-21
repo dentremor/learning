@@ -10,21 +10,13 @@ def primes_helper(n, i, p_list):
     else:
         return p_list
 
-
 def is_prime(n, j):
-      if is_prime_helper(n, j) is True:
-         return True
-      else:
-         return False
-
-
-def is_prime_helper(n, j):
     if n == j:
         return True
     elif n % j == 0:
         return False
     else:
-        return is_prime_helper(n, j+1)
+        return is_prime(n, j+1)
 
 
 print(primes(100))
