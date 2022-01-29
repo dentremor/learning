@@ -8,7 +8,7 @@ getDecimalHelper(number, decimal, list, i_number, i_decimal, result) =
    else if i_decimal = (decimal+1) then
       result
    else
-      getDecimalHelper(number, decimal, [], 1, i_decimal+1, list[length(list)-2])
+      getDecimalHelper(number, decimal, [], 1, i_decimal+1, list[length(list)])
    endif
 endif
       
@@ -16,7 +16,7 @@ endif
 power(basis, power) = powerHelper(basis, power, 1, 1)
 
 powerHelper(basis, power, i, result) =
-   if i > power then
+   if i>power then
       result
    else
       powerHelper(basis, power, i+1, basis*result)

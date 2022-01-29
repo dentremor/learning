@@ -7,6 +7,7 @@ func main() {
 
 	for i := 0; i < len(numbers); i++ {
 		for j := 0; j < len(numbers)-1; j++ {
+			println("run: ", j)
 			if numbers[j] > numbers[j+1] {
 				cache := numbers[j]
 				numbers[j] = numbers[j+1]

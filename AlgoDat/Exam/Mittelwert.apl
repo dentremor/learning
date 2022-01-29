@@ -1,0 +1,10 @@
+main() = mittelwert([1, 3, 8, 16, 30, 44])
+
+mittelwert(list) = _mittelwert(list, 0, 0)
+
+_mittelwert(list, i, sum) =
+   if i = length(list) then
+      sum/length(list)
+   else
+      _mittelwert(list, i+1, sum+list[i])
+   endif
