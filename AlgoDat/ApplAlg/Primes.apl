@@ -2,7 +2,6 @@ main() = prime(100)
 
 prime(n) = _primes(n, 2, [])
 
-
 _primes(n, i, p_list) = 
    if n<i then
       p_list

@@ -1,9 +1,10 @@
 main() = sum(100)
 
-sum(N) = _sum(N, 0, 1)
+sum(n) = _sum(n, 1, 0)
 
-_sum(N, sum, i) = if i>N then
+_sum(n, i, sum) = 
+   if i>n then
       sum
    else
-      _sum(N, sum+i, i+1)
+      _sum(n, i+1, sum+i)
    endif
