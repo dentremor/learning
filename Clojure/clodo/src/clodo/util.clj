@@ -14,8 +14,8 @@
 (defn delete-task
   "Deletes a task from the todo list by index"
   [todo-list index]
-  (let [new-list (concat (subvec todo-list 0 index)
-                         (subvec todo-list (inc index)))]
+  (let [new-list (into [] (concat (subvec todo-list 0 index)
+                                  (subvec todo-list (inc index))))]
     new-list))
 
 (defn mark-task-as-done
