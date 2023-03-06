@@ -16,7 +16,7 @@
   (let [input (read-line)]
     (case input
       "add" (def todo-list (display/add-screen todo-list))
-      "list" (display/handler-show-screen todo-list)
+      "list" (display/list-screen todo-list)
       "del" (def todo-list (display/delete-screen todo-list))
       "comp" (def todo-list (display/complete-screen todo-list))
       "expo" (display/export-screen todo-list)

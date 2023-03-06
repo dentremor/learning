@@ -9,12 +9,8 @@
   "Print the given string in the given color"
   [string & [color]]
   (case color
-    "GREEN" (str "\u001B[32m" string "\u001B[0m")
-    "YELLOW" (str "\u001B[33m" string "\u001B[0m")
-    "GRAY" (str "\u001B[90m" string "\u001B[0m")
     "GREEN_BOLD" (str "\033[1;32m" string "\u001B[0m")
     "YELLOW_BOLD" (str "\033[1;33m" string "\u001B[0m")
-    "GRAY_BOLD" (str "\033[1;90m" string "\u001B[0m")
     (str string)))
 
 (defn- clear-screen
@@ -24,56 +20,63 @@
   (print (str (char 27) "[;H"))) ; move cursor to the top left corner of the screen
 
 (defn- get-date
-  "TODO"
+  "Handles and validate a date parameter"
   [print & [invalid]]
   (if (nil? invalid)
     (println print)
     (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
-  (let [input (read-line)]
-    (try
-      (validate/date input)
-      (catch Exception e
-        (let [invalid (-> e ex-data :input)]
-          (get-date print invalid)))) input))
+  (let [input
+        (try
+          (validate/date (read-line))
+          (catch Exception e
+            (let [invalid (-> e ex-data :input)]
+              (get-date print invalid))))] input))
 
 (defn- get-num-in-interval
-  "TODO"
+  "Handles and validate a number parameter from a given interval"
   [print lower upper & [invalid]]
   (if (nil? invalid)
     (println print)
     (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
-  (let [input (Integer/parseInt (read-line))]
-    (try
-      (validate/num-in-interval input lower upper)
-      (catch Exception e
-        (let [invalid (-> e ex-data :input)]
-          (get-num-in-interval print lower upper invalid)))) input))
+  (let [input (try (validate/num-in-interval (Integer/parseInt (read-line)) lower upper)
+                   (catch Exception e
+                     (let [invalid (-> e ex-data :input)]
+                       (get-num-in-interval print lower upper invalid))))] input))
 
 (defn- get-string-in-list
-  "TODO"
+  "Handles and validate a string parameter from a given list"
   [print list & [invalid]]
   (if (nil? invalid)
     (println print)
     (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
-  (let [input (read-line)]
-    (try
-      (validate/string-in-list input list)
-      (catch Exception e
-        (let [invalid (-> e ex-data :input)]
-          (get-string-in-list print list invalid)))) input))
+  (let [input
+        (try
+          (validate/string-in-list (read-line) list)
+          (catch Exception e
+            (let [invalid (-> e ex-data :input)]
+              (get-string-in-list print list invalid))))] input))
 
 (defn- get-path
-  "TODO"
+  "Handles and validate a path"
   [print & [invalid]]
   (if (nil? invalid)
     (println print)
     (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
-  (let [input (read-line)]
-    (try
-      (validate/path input)
-      (catch Exception e
-        (let [invalid (-> e ex-data :input)]
-          (get-path print invalid)))) input))
+  (let [input
+        (try
+          (validate/path (read-line))
+          (catch Exception e
+            (let [invalid (-> e ex-data :input)]
+              (get-path print invalid))))] input))
+
+(defn- print-todos
+  "Display all todos from todo-list as a table"
+  [todos & [filter flag]]
+  (print-table [:index :name :deadline :importance :pending]
+               (map-indexed (fn [idx todo] (merge (hash-map :index idx) todo))
+                            (when (not (nil? filter))
+                              (sort-by (keyword filter) todos))))
+  (when flag (read-line)))
 
 ;; Functions
 
@@ -91,11 +94,9 @@
   (println "  " (colorize-string "exit" "GREEN_BOLD") "\tTo escape.\n"))
 
 (defn add-screen
-  "Display the add todo and handles parameter"
-  [todo-list & [invalid]]
+  "Display the add-screen and call relevant functions"
+  [todo-list]
   (clear-screen)
-  (when (not (nil? invalid))
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
   (let [name (do (println "Enter todo name: ") (read-line))
         deadline (get-date "Enter todo deadline (e.g. 2023-03-22): ")
         importance (get-num-in-interval "Enter todo importance (1-3): " 1 3)
@@ -103,64 +104,40 @@
     (print-table [:name :deadline :importance :pending] [(last new-list)]) (read-line)
     new-list))
 
-(defn show-screen
-  "Display all tasks as table format"
-  [todos & [filter flag]]
-  (print-table [:index :name :deadline :importance :pending]
-               (map-indexed (fn [idx todo] (merge (hash-map :index idx) todo))
-                            (when (not (nil? filter))
-                              (sort-by (keyword filter) todos))))
-  (when flag (read-line)))
-
-(defn handler-show-screen
-  "Display the add todo and handles parameter"
-  [todo-list & [invalid]]
+(defn list-screen
+  "Display the list-screen and call relevant functions"
+  [todo-list]
   (clear-screen)
-  (when (not (nil? invalid))
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
   (let [filter (get-string-in-list "Sort list by (name, deadline, importance, pending): " '("name" "deadline" "importance" "pending"))]
-    (show-screen todo-list filter true)))
+    (print-todos todo-list filter true)))
 
 (defn delete-screen
-  "Displays all todos and deletes one of them"
-  [todo-list & [invalid]]
-  (clear-screen)
-  (when (not (nil? invalid))
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
-  (show-screen todo-list :index false)
-  (let [index (do (println "Delete Task with index: ")
-                  (try
-                    (validate/num-in-interval
-                     (Integer/parseInt (read-line)) 0 (dec (count todo-list)))
-                    (catch Exception e
-                      (let [invalid (-> e ex-data :input)]
-                        (delete-screen todo-list invalid)))))
+  "Display the delete-screen and call relevant functions"
+  [todo-list]
+  (print-todos todo-list :index false)
+  (let [index (get-num-in-interval "Complete Task with index: " 0 (dec (count todo-list)))
         new-list (util/delete-todo todo-list index)]
     new-list))
 
 (defn complete-screen
-  "Displays all todos and deletes one of them"
-  [todo-list & [invalid]]
-  (show-screen todo-list :index false)
+  "Display the complete-screen and call relevant functions"
+  [todo-list]
+  (print-todos todo-list :index false)
   (let [index (get-num-in-interval "Complete Task with index: " 0 (- (count todo-list) 1))
         new-list (util/complete-todo todo-list index)]
     new-list))
 
 (defn export-screen
-  "List all tasks as table format"
-  [todo-list & [invalid]]
+  "Display the export-screen and call relevant functions"
+  [todo-list]
   (clear-screen)
-  (when (not (nil? invalid))
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
   (let [path (get-path "Enter a path for storing a json file (e.g. /tmp/foo.json): ")]
     (util/export-todos todo-list path)))
 
 (defn import-screen
-  "List all tasks as table format"
-  [& [invalid]]
+  "Display the import-screen and call relevant functions"
+  []
   (clear-screen)
-  (when (not (nil? invalid))
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
   (let [path (get-path "Enter a path for storing a json file (e.g. /tmp/foo.json): ")
         todo-list (util/import-todos path)]
     todo-list))

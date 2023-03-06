@@ -4,21 +4,21 @@
   (:require [cheshire.core :refer :all]))
 
 (defn add-todo
-  "Creates a task"
+  "Creates a todo"
   [todo-list name deadline importance]
   (let [new-list (hash-map :name name :deadline deadline :importance importance :pending true)
         updated-list (conj todo-list new-list)]
     updated-list))
 
 (defn delete-todo
-  "Deletes a task from the todo list by index"
+  "Deletes a todo from the todo list by index"
   [todo-list index]
   (let [new-list (into [] (concat (subvec todo-list 0 index)
                                   (subvec todo-list (inc index))))]
     new-list))
 
 (defn complete-todo
-  "Mark a pending task as done"
+  "Mark a pending todo as done"
   [todo-list index]
   (assoc-in todo-list [index :pending] false))
 
