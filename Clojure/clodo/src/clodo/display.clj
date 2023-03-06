@@ -23,6 +23,58 @@
   (print (str (char 27) "[2J")) ; clear screen
   (print (str (char 27) "[;H"))) ; move cursor to the top left corner of the screen
 
+(defn- get-date
+  "TODO"
+  [print & [invalid]]
+  (if (nil? invalid)
+    (println print)
+    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
+  (let [input (read-line)]
+    (try
+      (validate/date input)
+      (catch Exception e
+        (let [invalid (-> e ex-data :input)]
+          (get-date print invalid)))) input))
+
+(defn- get-num-in-interval
+  "TODO"
+  [print lower upper & [invalid]]
+  (if (nil? invalid)
+    (println print)
+    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
+  (let [input (Integer/parseInt (read-line))]
+    (try
+      (validate/num-in-interval input lower upper)
+      (catch Exception e
+        (let [invalid (-> e ex-data :input)]
+          (get-num-in-interval print lower upper invalid)))) input))
+
+(defn- get-string-in-list
+  "TODO"
+  [print list & [invalid]]
+  (if (nil? invalid)
+    (println print)
+    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
+  (let [input (read-line)]
+    (try
+      (validate/string-in-list input list)
+      (catch Exception e
+        (let [invalid (-> e ex-data :input)]
+          (get-string-in-list print list invalid)))) input))
+
+(defn- get-path
+  "TODO"
+  [print & [invalid]]
+  (if (nil? invalid)
+    (println print)
+    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
+  (let [input (read-line)]
+    (try
+      (validate/path input)
+      (catch Exception e
+        (let [invalid (-> e ex-data :input)]
+          (get-path print invalid)))) input))
+
 ;; Functions
 
 (defn welcome-screen
@@ -45,20 +97,10 @@
   (when (not (nil? invalid))
     (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
   (let [name (do (println "Enter todo name: ") (read-line))
-        deadline (do (println "Enter todo deadline (e.g. 2023-03-22): ")
-                     (try
-                       (validate/date (read-line))
-                       (catch Exception e
-                         (let [invalid (-> e ex-data :input)]
-                           (add-screen todo-list invalid)))))
-        importance (do (println "Enter todo importance (1-3): ")
-                       (try
-                         (validate/num-in-interval
-                          (Integer/parseInt (read-line)) 1 3)
-                         (catch Exception e
-                           (let [invalid (-> e ex-data :input)]
-                             (add-screen todo-list invalid)))))
-        new-list (util/add-task todo-list name deadline importance)]
+        deadline (get-date "Enter todo deadline (e.g. 2023-03-22): ")
+        importance (get-num-in-interval "Enter todo importance (1-3): " 1 3)
+        new-list (util/add-todo todo-list name deadline importance)]
+    (print-table [:name :deadline :importance :pending] [(last new-list)]) (read-line)
     new-list))
 
 (defn show-screen
@@ -76,12 +118,7 @@
   (clear-screen)
   (when (not (nil? invalid))
     (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
-  (let [filter (do (println "Sort list by (name, deadline, importance, pending): ")
-                   (try
-                     (validate/with-list (read-line) '("name" "deadline" "importance" "pending"))
-                     (catch Exception e
-                       (let [invalid (-> e ex-data :input)]
-                         (handler-show-screen todo-list invalid)))))]
+  (let [filter (get-string-in-list "Sort list by (name, deadline, importance, pending): " '("name" "deadline" "importance" "pending"))]
     (show-screen todo-list filter true)))
 
 (defn delete-screen
@@ -98,21 +135,15 @@
                     (catch Exception e
                       (let [invalid (-> e ex-data :input)]
                         (delete-screen todo-list invalid)))))
-        new-list (util/delete-task todo-list index)]
+        new-list (util/delete-todo todo-list index)]
     new-list))
 
 (defn complete-screen
   "Displays all todos and deletes one of them"
   [todo-list & [invalid]]
   (show-screen todo-list :index false)
-  (let [index (do (println "Complete Task with index: ")
-                  (try
-                    (validate/num-in-interval
-                     (Integer/parseInt (read-line)) 0 (- (count todo-list) 1))
-                    (catch Exception e
-                      (let [invalid (-> e ex-data :input)]
-                        (complete-screen  todo-list invalid)))))
-        new-list (util/mark-task-as-done todo-list index)]
+  (let [index (get-num-in-interval "Complete Task with index: " 0 (- (count todo-list) 1))
+        new-list (util/complete-todo todo-list index)]
     new-list))
 
 (defn export-screen
@@ -121,12 +152,7 @@
   (clear-screen)
   (when (not (nil? invalid))
     (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
-  (let [path (do (println "Enter a path for storing the .json: ")
-                 (try
-                   (validate/path (read-line))
-                   (catch Exception e
-                     (let [invalid (-> e ex-data :input)]
-                       (export-screen todo-list invalid)))))]
+  (let [path (get-path "Enter a path for storing a json file (e.g. /tmp/foo.json): ")]
     (util/export-todos todo-list path)))
 
 (defn import-screen
@@ -135,11 +161,6 @@
   (clear-screen)
   (when (not (nil? invalid))
     (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again!"))
-  (let [path (do (println "Enter a path for storing the .json: ")
-                 (try
-                   (validate/path (read-line))
-                   (catch Exception e
-                     (let [invalid (-> e ex-data :input)]
-                       (import-screen invalid)))))
+  (let [path (get-path "Enter a path for storing a json file (e.g. /tmp/foo.json): ")
         todo-list (util/import-todos path)]
     todo-list))

@@ -1,0 +1,1 @@
+["^ ","~$split",["^ ","~:row",2,"~:col",1,"~:fixed-arities",["~#set",[2]],"~:name","^0","~:ns","~$clojure.string","~:top-ns","^7","~:type","~:fn"],"~:filename","/home/danny/Repos/learning/clojure/string.clj"]

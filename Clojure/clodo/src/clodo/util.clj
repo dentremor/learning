@@ -3,22 +3,21 @@
   (:require [clojure.pprint :refer [print-table]])
   (:require [cheshire.core :refer :all]))
 
-(defn add-task
+(defn add-todo
   "Creates a task"
   [todo-list name deadline importance]
   (let [new-list (hash-map :name name :deadline deadline :importance importance :pending true)
         updated-list (conj todo-list new-list)]
-    (print-table [:name :deadline :importance :pending] [new-list]) (read-line)
     updated-list))
 
-(defn delete-task
+(defn delete-todo
   "Deletes a task from the todo list by index"
   [todo-list index]
   (let [new-list (into [] (concat (subvec todo-list 0 index)
                                   (subvec todo-list (inc index))))]
     new-list))
 
-(defn mark-task-as-done
+(defn complete-todo
   "Mark a pending task as done"
   [todo-list index]
   (assoc-in todo-list [index :pending] false))
