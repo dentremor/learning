@@ -29,7 +29,6 @@
     (throw (ex-info "Invalide Input" {:input input}))
     (+ input 1)) input)
 
-
 (defn file-exists
   "Validates if file exists"
   [input]

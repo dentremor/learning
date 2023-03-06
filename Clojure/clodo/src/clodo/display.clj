@@ -1,5 +1,4 @@
 (ns clodo.display
-  (:require [clojure.java.io :as io])
   (:require [clojure.pprint :refer [print-table]])
   (:require [clodo.util :as util])
   (:require [clodo.validate :as validate]))
@@ -70,7 +69,7 @@
               (get-export-path print invalid))))] input))
 
 (defn- get-import-path
-  "Handles and validate a path"
+  "Handles and validate if file exists"
   [print & [invalid-path]]
   (if (nil? invalid-path)
     (println print)
