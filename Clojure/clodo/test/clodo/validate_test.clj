@@ -25,17 +25,13 @@
     (is (thrown? clojure.lang.ExceptionInfo (validate/num-in-interval invalid-input lower-limit upper-limit)))))
 
 (deftest path-test []
-  (let [valid-input "file.json"
-        valid-input1 "/tmp/file.json"
-        invalid-input "path/to/file"
-        invalid-input2 "file."
-        invalid-input3 "file.json.c"
-        invalid-input4 "file..json"]
+  (let [valid-input "/home/user/file"
+        invalid-input "usr/bin"
+        invalid-input2 "/home/user/file with spaces"
+        invalid-input3 "/usr//bin"
+        invalid-input4 "/var/log/messages/"]
     (is (= valid-input (validate/path valid-input)))
-    (is (= valid-input1 (validate/path valid-input)))
     (is (thrown? clojure.lang.ExceptionInfo (validate/path invalid-input)))
     (is (thrown? clojure.lang.ExceptionInfo (validate/path invalid-input2)))
     (is (thrown? clojure.lang.ExceptionInfo (validate/path invalid-input3)))
     (is (thrown? clojure.lang.ExceptionInfo (validate/path invalid-input4)))))
-
-

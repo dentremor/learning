@@ -25,6 +25,6 @@
 (defn path
   "Validates if the input lays in an interval"
   [input]
-  (when (not (re-matches #"^.*[^\.]\.json$" input))
+  (when (not (re-matches #"^(/[^/ ]+)+$" input))
     (throw (ex-info "Invalide Input" {:input input}))
     (+ input 1)) input)
