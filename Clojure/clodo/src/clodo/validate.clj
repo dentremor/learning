@@ -31,8 +31,8 @@
 
 
 (defn file-exists
-  "Validates if input matches a unix path"
+  "Validates if file exists"
   [input]
-  (when (.exists (io/file input))
+  (when (not (.exists (io/file input)))
     (throw (ex-info "Invalide Input" {:input input}))
     (+ input 1)) input)

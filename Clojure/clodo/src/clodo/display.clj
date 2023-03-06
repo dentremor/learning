@@ -1,4 +1,5 @@
 (ns clodo.display
+  (:require [clojure.java.io :as io])
   (:require [clojure.pprint :refer [print-table]])
   (:require [clodo.util :as util])
   (:require [clodo.validate :as validate]))
@@ -23,7 +24,7 @@
   [print & [invalid]]
   (if (nil? invalid)
     (println print)
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
+    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option! Please try again:"))
   (let [input
         (try
           (validate/date (read-line))
@@ -36,7 +37,7 @@
   [print lower upper & [invalid]]
   (if (nil? invalid)
     (println print)
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
+    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option! Please try again:"))
   (let [input (try (validate/num-in-interval (Integer/parseInt (read-line)) lower upper)
                    (catch Exception e
                      (let [invalid (-> e ex-data :input)]
@@ -47,7 +48,7 @@
   [print list & [invalid]]
   (if (nil? invalid)
     (println print)
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
+    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option! Please try again:"))
   (let [input
         (try
           (validate/string-in-list (read-line) list)
@@ -55,18 +56,31 @@
             (let [invalid (-> e ex-data :input)]
               (get-string-in-list print list invalid))))] input))
 
-(defn- get-path
+(defn- get-export-path
   "Handles and validate a path"
   [print & [invalid-path]]
   (if (nil? invalid-path)
     (println print)
-    (println (colorize-string invalid-path "YELLOW_BOLD") "is no valid option. Please try again:"))
+    (println (colorize-string invalid-path "YELLOW_BOLD") "is no valid option! Please try again:"))
   (let [input
         (try
           (validate/path (read-line))
           (catch Exception e
             (let [invalid (-> e ex-data :input)]
-              (get-path print invalid))))] input))
+              (get-export-path print invalid))))] input))
+
+(defn- get-import-path
+  "Handles and validate a path"
+  [print & [invalid-path]]
+  (if (nil? invalid-path)
+    (println print)
+    (println (colorize-string invalid-path "YELLOW_BOLD") "doesn't exist! Please try again:"))
+  (let [input
+        (try
+          (validate/file-exists (read-line))
+          (catch Exception e
+            (let [invalid (-> e ex-data :input)]
+              (get-import-path print invalid))))] input))
 
 (defn- print-todos
   "Display all todos from todo-list as a table"
@@ -130,13 +144,15 @@
   "Display the export-screen and call relevant functions"
   [todo-list]
   (clear-screen)
-  (let [path (get-path "Enter a path for storing a json file (e.g. /tmp/foo.json): ")]
+  (let [path (get-export-path "Enter a path for storing a json file (e.g. /tmp/foo.json): ")]
     (util/export-todos todo-list path)))
 
 (defn import-screen
   "Display the import-screen and call relevant functions"
-  []
-  (clear-screen)
-  (let [path (get-path "Enter a path for importing a json file (e.g. /tmp/foo.json): ")
+  [& [missing]]
+  (if (nil? missing)
+    (clear-screen)
+    (println "File doesn't exist!"))
+  (let [path (get-import-path "Enter a path for importing a json file (e.g. /tmp/foo.json): ")
         todo-list (util/import-todos path)]
     todo-list))
