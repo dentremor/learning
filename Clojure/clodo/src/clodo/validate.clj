@@ -1,5 +1,5 @@
 (ns clodo.validate
-  (:require [clojure.string :as clojure.string]))
+  (:require [clojure.java.io :as io]))
 
 (defn string-in-list
   "Validates the input with a list"
@@ -26,5 +26,13 @@
   "Validates if input matches a unix path"
   [input]
   (when (not (re-matches #"^(/[^/ ]+)+$" input))
+    (throw (ex-info "Invalide Input" {:input input}))
+    (+ input 1)) input)
+
+
+(defn file-exists
+  "Validates if input matches a unix path"
+  [input]
+  (when (.exists (io/file input))
     (throw (ex-info "Invalide Input" {:input input}))
     (+ input 1)) input)

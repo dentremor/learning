@@ -1,6 +1,5 @@
 (ns clodo.util
   (:require [clojure.core :refer [concat]])
-  (:require [clojure.pprint :refer [print-table]])
   (:require [cheshire.core :refer :all]))
 
 (defn add-todo
@@ -13,6 +12,7 @@
 (defn delete-todo
   "Deletes a todo from the todo list by index"
   [todo-list index]
+  (println todo-list)
   (let [new-list (into [] (concat (subvec todo-list 0 index)
                                   (subvec todo-list (inc index))))]
     new-list))
@@ -30,5 +30,5 @@
 (defn import-todos
   "Imports the todo-list from a JSON file"
   [path]
-  (let [new-list (parse-stream (clojure.java.io/reader path) true)]
+  (let [new-list (into [] (parse-stream (clojure.java.io/reader path) true))]
     new-list))

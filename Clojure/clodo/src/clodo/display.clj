@@ -7,11 +7,10 @@
 
 (defn- colorize-string
   "Print the given string in the given color"
-  [string & [color]]
+  [string color]
   (case color
     "GREEN_BOLD" (str "\033[1;32m" string "\u001B[0m")
-    "YELLOW_BOLD" (str "\033[1;33m" string "\u001B[0m")
-    (str string)))
+    "YELLOW_BOLD" (str "\033[1;33m" string "\u001B[0m")))
 
 (defn- clear-screen
   "Clears screen and moves the cursor to the top left"
@@ -58,10 +57,10 @@
 
 (defn- get-path
   "Handles and validate a path"
-  [print & [invalid]]
-  (if (nil? invalid)
+  [print & [invalid-path]]
+  (if (nil? invalid-path)
     (println print)
-    (println (colorize-string invalid "YELLOW_BOLD") "is no valid option. Please try again:"))
+    (println (colorize-string invalid-path "YELLOW_BOLD") "is no valid option. Please try again:"))
   (let [input
         (try
           (validate/path (read-line))
@@ -71,12 +70,12 @@
 
 (defn- print-todos
   "Display all todos from todo-list as a table"
-  [todos & [filter flag]]
+  [todos & [filter wait]]
   (print-table [:index :name :deadline :importance :pending]
                (map-indexed (fn [idx todo] (merge (hash-map :index idx) todo))
                             (when (not (nil? filter))
                               (sort-by (keyword filter) todos))))
-  (when flag (read-line)))
+  (when wait (read-line)))
 
 ;; Functions
 
@@ -89,8 +88,8 @@
   (println "  " (colorize-string "list" "GREEN_BOLD") "\tTo list all todos.")
   (println "  " (colorize-string "del" "GREEN_BOLD") "\t\tTo delete a todo.")
   (println "  " (colorize-string "comp" "GREEN_BOLD") "\tTo mark a todo as completed.")
-  (println "  " (colorize-string "expo" "GREEN_BOLD") "\tTo export the todo.")
-  (println "  " (colorize-string "impo" "GREEN_BOLD") "\tTo import the todo.")
+  (println "  " (colorize-string "expo" "GREEN_BOLD") "\tTo export the todos.")
+  (println "  " (colorize-string "impo" "GREEN_BOLD") "\tTo import the todos.")
   (println "  " (colorize-string "exit" "GREEN_BOLD") "\tTo escape.\n"))
 
 (defn add-screen
@@ -138,6 +137,6 @@
   "Display the import-screen and call relevant functions"
   []
   (clear-screen)
-  (let [path (get-path "Enter a path for storing a json file (e.g. /tmp/foo.json): ")
+  (let [path (get-path "Enter a path for importing a json file (e.g. /tmp/foo.json): ")
         todo-list (util/import-todos path)]
     todo-list))
