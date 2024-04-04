@@ -1,5 +1,11 @@
 package internal
 
+import (
+	"fmt"
+	"strconv"
+	"time"
+)
+
 func readInput() string {
 	text, err := reader.ReadString('\n')
 	if err != nil {

@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/dentremor/learning/Go/todo-list/internal"
 	"os"
 	"time"
 )
@@ -31,15 +32,15 @@ func main() {
 
 	for {
 		fmt.Println("\nChoose an option: (1) Add ToDo, (2) Print ToDos, (q) Exit")
-		option := display.readInput()
+		option := internal.readInput()
 
 		switch option {
 		case "1":
 			internal.addTodo(&toDoList)
 		case "2":
-			printTodos(&toDoList)
+			internal.printTodos(&toDoList)
 		case "3":
-			deleteTodo(&toDoList)
+			internal.deleteTodo(&toDoList)
 		case "q":
 			fmt.Println("\nBye!")
 			return
