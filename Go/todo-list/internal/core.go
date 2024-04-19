@@ -1,20 +1,35 @@
-package internal
+package todo
 
-func addTodo(todoList *[]ToDo) {
+import (
+	"fmt"
+	"strings"
+	"time"
+)
+
+const dateLayout = "02.01.2006"
+
+type ToDo struct {
+	name     string
+	deadline time.Time
+	pending  bool
+	priority int
+}
+
+func AddTodo(todoList *[]ToDo) {
 	todo := ToDo{}
 	fmt.Println("\n---- New ToDo ----")
 	fmt.Printf("Name: ")
-	todo.name = readInput()
+	todo.name = ReadInput()
 	fmt.Printf("Deadline (DD.MM.YYYY): ")
-	todo.deadline = parseDate(readInput())
+	todo.deadline = parseDate(ReadInput())
 	fmt.Printf("Priority (number): ")
-	todo.priority = parseInt(readInput())
+	todo.priority, _ = parseInt(ReadInput())
 	todo.pending = true
 
 	*todoList = append(*todoList, todo)
 }
 
-func printTodos(todoList *[]ToDo) {
+func PrintTodos(todoList *[]ToDo) {
 	indexWidth := 6
 	nameWidth := 25
 	deadlineWidth := 15
@@ -33,7 +48,7 @@ func printTodos(todoList *[]ToDo) {
 	fmt.Println("\n" + headerLine)
 	fmt.Println(strings.Repeat("-", len(headerLine)))
 
-	// Print body
+	// Print columns
 	for i, todo := range *todoList {
 		fmt.Printf("|%*d|%*s|%*s|%*t|%*d|\n",
 			-indexWidth, i,
@@ -45,11 +60,14 @@ func printTodos(todoList *[]ToDo) {
 	}
 }
 
-func deleteTodo(todoList *[]ToDo) {
-	printTodos(todoList)
-	fmt.Printf("\nDelete Todo with index: ")
-	delIndex, err := parseInt(readInput())
-	if (err != nil) || (delIndex < 0) || ()
-	*todoList = append((*todoList)[:delIndex], (*todoList)[delIndex+1:]...)
+func DeleteTodo(todoList *[]ToDo) {
+	if len(*todoList) != 0 {
+		PrintTodos(todoList)
+		fmt.Printf("\nDelete Todo with index: ")
+		delIndex := readIndex(len(*todoList))
+		*todoList = append((*todoList)[:delIndex], (*todoList)[delIndex+1:]...)
+	} else {
+		fmt.Println("There are no todos!")
+	}
 
 }
